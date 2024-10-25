@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ "/assets/css/style.css" | relative_url }}">
+    </head>
+    <body>
+        <div class="title">
+          </div>
+
+        <div class="title">
+            <h1><a href="/"> {{ site.title }} </a></h1>
+            {% if page.title %}<p>{{ page.title }}</p>{% endif %}
+        </div>
+        <div class="sidebar">
+            {% capture side_md %}{% include sidebar.md %}{% endcapture %}
+            {{ side_md | markdownify }}
+
+            {% if site.posts.size > 0 %}
+            <h3>Posts</h3>
+            <!-- posts tree -->
+            {% assign year = site.posts[0].date | date: "%Y" %}
+            {% assign month = site.posts[0].date | date: "%b" %}
+            <div class="posttree">
+                <ul>
+                    <li><details><summary>{{year}}</summary>
+                        <ul> 
+                            <li><details><summary>{{month}}</summary>
+                                <ul>
+                                    {% for p in site.posts %}
+                                        {% assign post_year = p.date | date: "%Y" %}
+                                        {% assign post_month = p.date | date: "%b" %}
+
+                                        {% if year != post_year %}
+                                            {% assign year = post_year %}
+                                            {% assign month = post_month %}
+                                </ul>
+                            </details></li>
+                        </ul>
+                    </details></li>
+                    <li><details><summary>{{year}}</summary>
+                        <ul>
+                            <li><details><summary>{{month}}</summary>
+                                <ul>
+                                        {% elsif month != post_month %}
+                                            {% assign month = post_month %}
+                                </ul>
+                            </details></li>
+                            <li><details><summary>{{month}}</summary>
+                                <ul>
+                                        {% endif %}
+                                        <li>{{ p.date | date: "%e"}}: <a href="{{p.url}}">{{ p.title }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </details></li>
+                        </ul>
+                    </details></li>
+                </ul>
+            </div>
+            <!-- tree end -->
+             {% endif %}
+            
+        </div>
+        <div class="navbar" id="navbar">
+            <div class="navbox"><a href="/">/</a></div>
+            {%- unless page.path contains '_posts' -%}
+            {%- assign split_path = page.url | remove_first: "/" | split: "/" -%}
+                {%- assign cur_path = "" -%}
+                {%- for dir in split_path -%}
+                    {%- assign cur_path = cur_path | append: "/" | append: dir -%}
+                    <div class="navbox"><a href="{{cur_path}}">{{dir}}</a></div>
+                {%- endfor -%}
+            {%- endunless -%}
+        </div>
+        <div class="content">
+            {{ content }}
+        </div>
+
+        <div class="footer">
+            {% if site.logo %}
+            <a href="/"><img src="{{site.logo | relative_url}}" alt="Logo" /></a>
+            {% endif %}
+            <div class="footer_notice">
+                {% capture side_md %}{% include footer.md %}{% endcapture %}
+                {{ side_md | markdownify }}
+            </div>
+        </div>
+        {% unless page.path contains '_posts' %}
+
+        {% endunless %}
+    </body>
+</html>
+
